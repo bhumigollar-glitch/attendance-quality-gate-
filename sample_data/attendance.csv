@@ -1,0 +1,15 @@
+Student ID,Student Name,Subject,Session/Semester,Classes Held,Classes Attended,Attendance %,Remarks
+ENG2024-001,Aarav Sharma,CS301-Data Structures,Fall 2026,30,28,93.3,Valid record - high attendance
+ENG2024-002,Ananya Iyer,CS301-Data Structures,Fall 2026,30,25,83.3,Valid record
+ENG2024-001,Aarav Sharma,EC204-Digital Electronics,Fall 2026,25,24,96.0,"Valid record - same student, different legitimate course"
+,Rohan Verma,CS301-Data Structures,Fall 2026,30,22,73.3,Error: Missing Student ID
+ENG2024-004,Pooja Hegde,,Fall 2026,30,26,86.7,Error: Missing Subject
+ENG2024-001,Aarav Sharma,CS301-Data Structures,Fall 2026,30,28,93.3,Duplicate: Repeat of first record
+ENG2024-005,Kavya Patel,CS301-Data Structures,Fall 2026,30,-2,0.0,Error: Negative present count
+ENG2024-006,Siddharth Rao,CS301-Data Structures,Fall 2026,-10,8,80.0,Error: Negative classes held
+ENG2024-007,Meera Nambiar,CS301-Data Structures,Fall 2026,25,28,112.0,Error: Attended (28) > Held (25)
+ENG2024-008,Vikram Malhotra,CS301-Data Structures,Fall 2026,30,15,85.0,Warning: Reported 85% instead of expected 50%
+ENG2024-009,Divya Reddy,CS305-Lab Elective,Fall 2026,0,0,0.0,Valid edge case: No classes conducted yet
+ENG2024-010,Aditya Joshi,CS305-Lab Elective,Fall 2026,0,0,100.0,Warning: 0 held but reported 100%
+ENG2024-011,Sneha Nair,CS301-Data Structures,Fall 2026,30,24,,Warning: Blank percentage column
+ENG2024-012,Gaurav Deshmukh,CS301-Data Structures,Fall 2026,30,27,90.0,Valid record
