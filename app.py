@@ -145,6 +145,26 @@ def main():
             load_sample = True
             sample_type = "clean"
 
+        # Download buttons for dummy templates
+        if os.path.exists(sample_path_messy):
+            with open(sample_path_messy, "rb") as f_m:
+                st.download_button(
+                    label="📥 Download Dummy (.xlsx with errors)",
+                    data=f_m.read(),
+                    file_name="sample_attendance_with_errors.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+        if os.path.exists(sample_path_clean):
+            with open(sample_path_clean, "rb") as f_c:
+                st.download_button(
+                    label="📥 Download Clean Dummy (.xlsx)",
+                    data=f_c.read(),
+                    file_name="sample_attendance_clean.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+
         # Validation Options
         st.markdown("---")
         st.subheader("⚙️ Validation Rules Config")
