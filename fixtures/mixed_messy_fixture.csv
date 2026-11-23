@@ -1,0 +1,6 @@
+student_id,student_name,attendance_date,attendance_status,class_id,remarks
+STU001,Alice Johnson,2024-10-01,Present,CS101,On time
+STU002,Bob Smith,not-a-date,Absent,CS101,Sick
+STU003,Carol Williams,2024-10-01,Vacation,CS101,Travel
+STU001,Alice Johnson,2024-10-01,Present,CS101,Duplicate entry
+STU005,,2024-10-01,Present,CS101,Missing name

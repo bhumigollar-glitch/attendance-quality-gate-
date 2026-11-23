@@ -1,0 +1,4 @@
+student_id,student_name,attendance_date,attendance_status,class_id
+  STU001  ,  Alice Johnson  , 2024-10-01 , present , CS101 
+STU002 ,Bob Smith ,01/10/2024,absent,CS101
+ STU003, Carol Williams,2024/10/01, leave ,CS101

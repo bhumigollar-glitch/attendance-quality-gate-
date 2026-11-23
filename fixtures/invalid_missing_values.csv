@@ -1,0 +1,6 @@
+student_id,student_name,attendance_date,attendance_status,class_id
+STU001,Alice Johnson,2024-10-01,Present,CS101
+,Bob Smith,2024-10-01,Absent,CS101
+STU003,,2024-10-01,Present,CS101
+STU004,David Brown,,Present,CS101
+STU005,Eve Davis,2024-10-01,,CS101

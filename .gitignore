@@ -20,3 +20,13 @@ htmlcov/
 .DS_Store
 Thumbs.db
 *.log
+
+# Databases & Local state
+*.db
+*.sqlite
+*.sqlite3
+attendance_gate.db
+
+# Environment
+.env
+

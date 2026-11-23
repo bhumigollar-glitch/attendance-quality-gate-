@@ -1,10 +1,10 @@
 """
 app.py
 ======
-Attendance Spreadsheet Quality Gate - High-Contrast Black & White Edition (MVP)
+Attendance Spreadsheet Quality Gate - High-Contrast Technical Edition (MVP)
 
-A brutalist, high-contrast monochrome web application for auditing attendance
-spreadsheets against institutional data-quality standards.
+A brutalist, high-contrast monochrome and telemetry dashboard for auditing
+attendance spreadsheets against institutional data-quality standards.
 """
 
 import io
@@ -22,141 +22,347 @@ from validator import (
 
 # Page configuration
 st.set_page_config(
-    page_title="Attendance Quality Gate // Monochrome",
+    page_title="Attendance Quality Gate // Telemetry",
     page_icon="⬛",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# High-Contrast Black & White CSS
+# Unified High-Contrast Dashboard CSS
 st.markdown(
     """
     <style>
-    /* Global Background & Typography */
+    /* 1. Global Background & Consistent Typography */
     .stApp {
         background-color: #000000 !important;
         color: #FFFFFF !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+
+    /* Reduce default Streamlit page top & side whitespace */
+    .block-container {
+        padding-top: 1.25rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 100% !important;
     }
     
-    [data-testid="stSidebar"] {
+    /* 2. Left Sidebar - Increased Width & Styling */
+    [data-testid="stSidebar"],
+    section[data-testid="stSidebar"] {
+        width: 380px !important;
+        min-width: 380px !important;
+        max-width: 420px !important;
         background-color: #0A0A0A !important;
-        border-right: 1px solid #262626 !important;
+        border-right: 1px solid #222222 !important;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        width: 380px !important;
+    }
+    [data-testid="stSidebarContent"] {
+        padding-top: 1.5rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
     }
 
     [data-testid="stHeader"] {
-        background-color: rgba(0, 0, 0, 0.9) !important;
+        background-color: rgba(0, 0, 0, 0.85) !important;
+        height: 2.75rem !important;
     }
 
-    /* Titles & Headers */
+    /* 3. Titles & Headers - Consistent Technical Aesthetic (No Serif) */
     .brand-title {
-        font-family: "Courier New", Courier, monospace, sans-serif;
-        font-size: 2.2rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.85rem;
         font-weight: 800;
         letter-spacing: -0.5px;
         color: #FFFFFF;
-        margin-bottom: 2px;
-        border-bottom: 2px solid #FFFFFF;
-        padding-bottom: 8px;
+        margin-bottom: 0px;
+        line-height: 1.2;
     }
     
     .brand-subtitle {
-        font-family: monospace;
-        font-size: 0.9rem;
-        color: #A3A3A3;
-        letter-spacing: 0.5px;
-        margin-top: 6px;
-        margin-bottom: 24px;
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+        font-size: 0.78rem;
+        color: #888888;
+        letter-spacing: 0.75px;
+        margin-top: 3px;
+        margin-bottom: 12px;
         text-transform: uppercase;
+        border-bottom: 1px solid #222222;
+        padding-bottom: 8px;
     }
 
-    /* Metric Cards */
-    .mono-card {
-        background-color: #0A0A0A;
-        border: 1px solid #333333;
-        border-radius: 4px;
-        padding: 16px;
-        text-align: left;
-    }
-    .mono-card-title {
-        font-family: monospace;
-        font-size: 0.8rem;
-        color: #888888;
-        text-transform: uppercase;
+    .section-header-compact {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #A3A3A3;
         letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 6px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    .mono-card-val {
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 2.4rem;
+
+    /* 4. Green, Yellow, and Red Status Indicators */
+    .indicator-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: middle;
+        flex-shrink: 0;
+    }
+    .dot-green {
+        background-color: #22c55e;
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+    }
+    .dot-yellow {
+        background-color: #eab308;
+        box-shadow: 0 0 8px rgba(234, 179, 8, 0.7);
+    }
+    .dot-red {
+        background-color: #ef4444;
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.75rem;
         font-weight: 800;
-        color: #FFFFFF;
-        line-height: 1.1;
-        margin-top: 4px;
+        letter-spacing: 0.75px;
+        margin-right: 10px;
+        line-height: 1;
+    }
+    .badge-green {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid #22c55e;
+    }
+    .badge-yellow {
+        background-color: rgba(234, 179, 8, 0.15);
+        color: #facc15;
+        border: 1px solid #eab308;
+    }
+    .badge-red {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid #ef4444;
     }
 
     /* Status Banners */
+    .gate-banner {
+        padding: 12px 18px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
     .gate-banner-pass {
-        background-color: #FFFFFF;
-        color: #000000;
-        border: 2px solid #FFFFFF;
-        padding: 14px 20px;
-        font-family: monospace;
-        font-size: 1.1rem;
-        font-weight: 900;
-        letter-spacing: 1px;
-        display: block;
-        margin-bottom: 18px;
-        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(34, 197, 94, 0.12) 0%, rgba(10, 10, 10, 0.95) 100%);
+        color: #4ade80;
+        border: 1px solid #166534;
+        border-left: 5px solid #22c55e;
     }
-
     .gate-banner-warn {
-        background-color: #141414;
-        color: #FFFFFF;
-        border: 2px dashed #FFFFFF;
-        padding: 14px 20px;
-        font-family: monospace;
-        font-size: 1.1rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-        display: block;
-        margin-bottom: 18px;
-        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(234, 179, 8, 0.12) 0%, rgba(10, 10, 10, 0.95) 100%);
+        color: #facc15;
+        border: 1px solid #854d0e;
+        border-left: 5px solid #eab308;
     }
-
     .gate-banner-fail {
-        background-color: #000000;
-        color: #FFFFFF;
-        border: 2px solid #FFFFFF;
-        padding: 14px 20px;
-        font-family: monospace;
-        font-size: 1.1rem;
-        font-weight: 900;
-        letter-spacing: 1px;
-        display: block;
-        margin-bottom: 18px;
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.14) 0%, rgba(10, 10, 10, 0.95) 100%);
+        color: #f87171;
+        border: 1px solid #991b1b;
+        border-left: 5px solid #ef4444;
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.12);
+    }
+
+    /* KPI Metric Cards */
+    .mono-card {
+        background-color: #0A0A0A;
+        border: 1px solid #222222;
         border-radius: 4px;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        padding: 12px 14px;
+        text-align: left;
+        margin-bottom: 8px;
+    }
+    .mono-card.kpi-records {
+        border-top: 3px solid #525252;
+    }
+    .mono-card.kpi-clean {
+        border-top: 3px solid #22c55e;
+    }
+    .mono-card.kpi-warning {
+        border-top: 3px solid #eab308;
+    }
+    .mono-card.kpi-error {
+        border-top: 3px solid #ef4444;
+    }
+    .mono-card.kpi-clean-zero {
+        border-top: 3px solid #262626;
+    }
+    
+    .mono-card-title {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.75rem;
+        color: #888888;
+        text-transform: uppercase;
+        letter-spacing: 0.75px;
+        display: flex;
+        align-items: center;
+    }
+    .mono-card-val {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.1;
+        margin-top: 2px;
     }
 
-    /* Buttons */
-    .stButton > button {
-        background-color: #0A0A0A !important;
-        color: #FFFFFF !important;
-        border: 1px solid #FFFFFF !important;
-        border-radius: 3px !important;
-        font-family: monospace !important;
-        font-size: 0.85rem !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-        transition: all 0.15s ease-in-out !important;
+    /* 5. Prominent Upload Section */
+    .sidebar-upload-panel {
+        background-color: #111111;
+        border: 1px solid #333333;
+        border-top: 2px solid #FFFFFF;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    .sidebar-upload-panel .title {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+    .sidebar-upload-panel .subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 0.75rem;
+        color: #888888;
+        margin-bottom: 10px;
     }
 
-    .stButton > button:hover {
+    [data-testid="stFileUploader"] {
+        border: 2px dashed #444444 !important;
+        padding: 12px 10px !important;
+        border-radius: 5px !important;
+        background-color: #080808 !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: #FFFFFF !important;
+        background-color: #121212 !important;
+        box-shadow: 0 0 14px rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-testid="stFileUploader"] button {
         background-color: #FFFFFF !important;
         color: #000000 !important;
         border: 1px solid #FFFFFF !important;
-        transform: translateY(-1px);
+        border-radius: 3px !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-weight: 800 !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 0.5px !important;
+        padding: 5px 12px !important;
+        transition: all 0.15s ease !important;
+    }
+    [data-testid="stFileUploader"] button:hover {
+        background-color: #D4D4D4 !important;
+        color: #000000 !important;
+    }
+
+    /* Hero Upload Card (Main page when no file loaded) */
+    .hero-upload-card {
+        background-color: #0A0A0A;
+        border: 2px dashed #444444;
+        border-radius: 8px;
+        padding: 24px;
+        text-align: center;
+        margin-bottom: 16px;
+        transition: border-color 0.2s ease;
+    }
+    .hero-upload-card:hover {
+        border-color: #FFFFFF;
+    }
+    .hero-upload-badge {
+        display: inline-block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.75rem;
+        font-weight: 800;
+        background-color: #1F1F1F;
+        color: #A3A3A3;
+        border: 1px solid #333333;
+        padding: 3px 10px;
+        border-radius: 3px;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+    .hero-upload-title {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+    .hero-upload-desc {
+        color: #888888;
+        font-size: 0.88rem;
+        max-width: 650px;
+        margin: 0 auto 16px auto;
+        line-height: 1.4;
+    }
+
+    /* 6. Fix Truncated Buttons (WITH ERR...) & General Buttons */
+    .stButton > button {
+        background-color: #0A0A0A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+        border-radius: 3px !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        padding: 6px 8px !important;
+        white-space: nowrap !important;
+        transition: all 0.15s ease-in-out !important;
+        width: 100% !important;
+    }
+    .stButton > button:hover {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        border-color: #FFFFFF !important;
+    }
+
+    /* Prevent truncation in Streamlit inner paragraph tag */
+    .stButton button p,
+    .stDownloadButton button p {
+        white-space: nowrap !important;
+        text-overflow: unset !important;
+        overflow: visible !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
     }
 
     .stDownloadButton > button {
@@ -164,53 +370,73 @@ st.markdown(
         color: #000000 !important;
         border: 1px solid #FFFFFF !important;
         border-radius: 3px !important;
-        font-family: monospace !important;
-        font-size: 0.85rem !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.78rem !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
-        letter-spacing: 1px !important;
+        letter-spacing: 0.5px !important;
+        padding: 6px 12px !important;
         transition: all 0.15s ease-in-out !important;
     }
-
     .stDownloadButton > button:hover {
         background-color: #000000 !important;
         color: #FFFFFF !important;
         border: 1px solid #FFFFFF !important;
     }
 
-    /* Tabs Styling */
+    /* Active dataset pill in sidebar */
+    .sidebar-active-pill {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.76rem;
+        background-color: #111111;
+        border: 1px solid #262626;
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        color: #D4D4D4;
+    }
+
+    /* 7. Tight, Compact Results Layout (Reduced Empty Space) */
+    div[data-testid="stHorizontalBlock"] {
+        gap: 10px !important;
+        margin-bottom: 4px !important;
+    }
+    div[data-testid="stVerticalBlock"] > div {
+        margin-bottom: 0px !important;
+    }
+
     button[data-baseweb="tab"] {
-        font-family: monospace !important;
-        font-size: 0.9rem !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.82rem !important;
         color: #888888 !important;
         border-bottom: 2px solid transparent !important;
-        padding: 10px 16px !important;
+        padding: 8px 14px !important;
+        letter-spacing: 0.5px !important;
     }
-    
     button[data-baseweb="tab"][aria-selected="true"] {
         color: #FFFFFF !important;
         border-bottom: 2px solid #FFFFFF !important;
         font-weight: 800 !important;
     }
 
-    /* Expanders & Inputs */
     [data-testid="stExpander"] {
         background-color: #0A0A0A !important;
-        border: 1px solid #262626 !important;
+        border: 1px solid #222222 !important;
         border-radius: 4px !important;
+        margin-bottom: 8px !important;
+    }
+    [data-testid="stExpander"] details summary {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.82rem !important;
     }
 
-    /* File uploader container */
-    [data-testid="stFileUploader"] {
-        border: 1px dashed #444444 !important;
-        padding: 12px !important;
-        border-radius: 4px !important;
-        background-color: #0A0A0A !important;
-    }
-
-    /* Dataframe borders */
     [data-testid="stDataFrame"] {
-        border: 1px solid #333333 !important;
+        border: 1px solid #262626 !important;
         border-radius: 4px;
     }
     </style>
@@ -239,24 +465,61 @@ def load_file(uploaded_file) -> pd.DataFrame:
         return None
 
 
-def render_monochrome_bar_chart(data: pd.DataFrame, x_col: str, y_col: str, title: str):
-    """Renders a clean high-contrast black & white bar chart using Altair."""
-    chart = (
-        alt.Chart(data)
-        .mark_bar(color="#FFFFFF", stroke="#000000", strokeWidth=1)
-        .encode(
-            x=alt.X(f"{x_col}:O", sort="-y", title="", axis=alt.Axis(labelColor="#CCCCCC", labelFont="monospace", labelAngle=-20)),
-            y=alt.Y(f"{y_col}:Q", title="Count", axis=alt.Axis(labelColor="#CCCCCC", labelFont="monospace", gridColor="#222222", tickColor="#555555")),
-            tooltip=[x_col, y_col],
+def render_chart(data: pd.DataFrame, x_col: str, y_col: str, title: str, is_severity: bool = False):
+    """Renders a clean high-contrast chart with green/yellow/red status indicators using Altair."""
+    if is_severity:
+        # Green/Yellow/Red status colors for severity bars
+        color_scale = alt.Scale(
+            domain=["ERROR", "Error", "WARNING", "Warning"],
+            range=["#ef4444", "#ef4444", "#eab308", "#eab308"],
         )
-        .properties(height=200, title=alt.TitleParams(text=title, color="#FFFFFF", font="monospace", fontSize=12))
-        .configure_view(strokeOpacity=0)
-    )
+        chart = (
+            alt.Chart(data)
+            .mark_bar(stroke="#000000", strokeWidth=1, cornerRadiusTopLeft=2, cornerRadiusTopRight=2)
+            .encode(
+                x=alt.X(
+                    f"{x_col}:O",
+                    sort="-y",
+                    title="",
+                    axis=alt.Axis(labelColor="#D4D4D4", labelFont="monospace", labelAngle=0, labelFontSize=10),
+                ),
+                y=alt.Y(
+                    f"{y_col}:Q",
+                    title="Count",
+                    axis=alt.Axis(labelColor="#888888", labelFont="monospace", gridColor="#1E1E1E", tickColor="#444444", labelFontSize=10),
+                ),
+                color=alt.Color(f"{x_col}:N", scale=color_scale, legend=None),
+                tooltip=[x_col, y_col],
+            )
+            .properties(height=160, title=alt.TitleParams(text=title, color="#A3A3A3", font="monospace", fontSize=11))
+            .configure_view(strokeOpacity=0)
+        )
+    else:
+        chart = (
+            alt.Chart(data)
+            .mark_bar(color="#E5E5E5", stroke="#000000", strokeWidth=1, cornerRadiusTopLeft=2, cornerRadiusTopRight=2)
+            .encode(
+                x=alt.X(
+                    f"{x_col}:O",
+                    sort="-y",
+                    title="",
+                    axis=alt.Axis(labelColor="#D4D4D4", labelFont="monospace", labelAngle=-15, labelFontSize=9),
+                ),
+                y=alt.Y(
+                    f"{y_col}:Q",
+                    title="Count",
+                    axis=alt.Axis(labelColor="#888888", labelFont="monospace", gridColor="#1E1E1E", tickColor="#444444", labelFontSize=10),
+                ),
+                tooltip=[x_col, y_col],
+            )
+            .properties(height=160, title=alt.TitleParams(text=title, color="#A3A3A3", font="monospace", fontSize=11))
+            .configure_view(strokeOpacity=0)
+        )
     st.altair_chart(chart, use_container_width=True)
 
 
 def main():
-    # Header Banner
+    # Header Banner - Clean Technical Aesthetic
     st.markdown('<div class="brand-title">ATTENDANCE QUALITY GATE</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="brand-subtitle">// DETERMINISTIC COMPLIANCE AUDIT & DATA VERIFICATION ENGINE</div>',
@@ -265,10 +528,24 @@ def main():
 
     # Sidebar: File Upload & Configuration
     with st.sidebar:
-        st.markdown("### `[ 01 // UPLOAD ]`")
-        uploaded_file = st.file_uploader(
+        # Prominent Upload Header & Box
+        st.markdown(
+            """
+            <div class="sidebar-upload-panel">
+                <div class="title">
+                    <span>01 // UPLOAD DATA</span>
+                    <span style="font-size: 0.65rem; background: #262626; color: #FFFFFF; padding: 2px 6px; border-radius: 2px;">PRIMARY</span>
+                </div>
+                <div class="subtitle">Drop Excel (.xlsx, .xls) or CSV (.csv)</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        uploaded_file_sidebar = st.file_uploader(
             "Select Attendance Spreadsheet",
             type=["xlsx", "xls", "csv"],
+            key="sidebar_uploader",
+            label_visibility="collapsed",
             help="Upload college attendance records in Excel (.xlsx, .xls) or CSV (.csv) format.",
         )
 
@@ -282,10 +559,10 @@ def main():
 
         load_sample = False
         sample_type = None
-        if col_s1.button("⚠ WITH ERRORS", use_container_width=True, help="Load synthetic attendance with deliberate edge cases."):
+        if col_s1.button("⚠ WITH ERRORS", key="btn_sample_errors", use_container_width=True, help="Load synthetic attendance with deliberate edge cases."):
             load_sample = True
             sample_type = "messy"
-        if col_s2.button("✓ 100% CLEAN", use_container_width=True, help="Load 100% clean attendance records."):
+        if col_s2.button("✓ 100% CLEAN", key="btn_sample_clean", use_container_width=True, help="Load 100% clean attendance records."):
             load_sample = True
             sample_type = "clean"
 
@@ -336,9 +613,13 @@ def main():
     df_raw = None
     file_display_name = ""
 
-    if uploaded_file is not None:
-        df_raw = load_file(uploaded_file)
-        file_display_name = uploaded_file.name
+    if uploaded_file_sidebar is not None:
+        df_raw = load_file(uploaded_file_sidebar)
+        file_display_name = uploaded_file_sidebar.name
+        st.sidebar.markdown(
+            f'<div class="sidebar-active-pill"><span class="indicator-dot dot-green"></span>FILE: <b>{file_display_name}</b></div>',
+            unsafe_allow_html=True,
+        )
     elif load_sample or "sample_loaded" in st.session_state:
         if load_sample:
             st.session_state["sample_loaded"] = sample_type
@@ -347,33 +628,51 @@ def main():
         if os.path.exists(target_path):
             df_raw = pd.read_excel(target_path)
             file_display_name = os.path.basename(target_path)
-            st.sidebar.caption(f"ACTIVE DATASET: `{file_display_name}`")
+            active_dot = "dot-green" if current_sample == "clean" else "dot-yellow"
+            st.sidebar.markdown(
+                f'<div class="sidebar-active-pill"><span class="indicator-dot {active_dot}"></span>ACTIVE: <b>{file_display_name}</b></div>',
+                unsafe_allow_html=True,
+            )
         else:
             st.warning("Sample data file not found on disk.")
 
     if df_raw is None:
-        # Welcome Guide in stark black and white
+        # Prominent Hero Upload Section in Main View
         st.markdown(
             """
-            <div style="border: 1px solid #333333; padding: 24px; background-color: #0A0A0A; border-radius: 4px;">
-                <h3 style="margin-top:0; font-family: monospace; letter-spacing: 1px;">AWAITING SPREADSHEET INPUT</h3>
-                <p style="color: #A3A3A3; font-size: 0.95rem;">
-                    Upload an Excel (<code>.xlsx</code>, <code>.xls</code>) or CSV (<code>.csv</code>) file via the sidebar, 
-                    or click <b>"WITH ERRORS"</b> / <b>"100% CLEAN"</b> to evaluate synthetic benchmarks immediately.
-                </p>
+            <div class="hero-upload-card">
+                <div class="hero-upload-badge">READY FOR INPUT // ZERO DATA RETAINED</div>
+                <div class="hero-upload-title">Drop Attendance Spreadsheet to Audit</div>
+                <div class="hero-upload-desc">
+                    Select an Excel (<code>.xlsx</code>, <code>.xls</code>) or CSV (<code>.csv</code>) file below, 
+                    drag & drop into the sidebar, or click <b>"WITH ERRORS"</b> / <b>"100% CLEAN"</b> for instant synthetic benchmarks.
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        uploaded_file_main = st.file_uploader(
+            "Primary File Dropzone",
+            type=["xlsx", "xls", "csv"],
+            key="main_dropzone",
+            label_visibility="collapsed",
+            help="Upload college attendance records in Excel or CSV format.",
+        )
+
+        if uploaded_file_main is not None:
+            df_raw = load_file(uploaded_file_main)
+            file_display_name = uploaded_file_main.name
+            st.rerun()
+
+        # Three Feature Cards
         col_w1, col_w2, col_w3 = st.columns(3)
         with col_w1:
             st.markdown(
                 """
                 <div class="mono-card">
-                    <div class="mono-card-title">01 // INGESTION</div>
-                    <div style="margin-top: 10px; color: #CCCCCC; font-size: 0.9rem;">
+                    <div class="mono-card-title"><span class="indicator-dot dot-green"></span>01 // INGESTION</div>
+                    <div style="margin-top: 8px; color: #A3A3A3; font-size: 0.85rem; line-height: 1.4;">
                         Automated mapping of student identifiers, course codes, session counts, and attendance ratios.
                     </div>
                 </div>
@@ -384,8 +683,8 @@ def main():
             st.markdown(
                 """
                 <div class="mono-card">
-                    <div class="mono-card-title">02 // DETERMINISTIC AUDIT</div>
-                    <div style="margin-top: 10px; color: #CCCCCC; font-size: 0.9rem;">
+                    <div class="mono-card-title"><span class="indicator-dot dot-yellow"></span>02 // DETERMINISTIC AUDIT</div>
+                    <div style="margin-top: 8px; color: #A3A3A3; font-size: 0.85rem; line-height: 1.4;">
                         4-rule deterministic gate: Missing values, accidental duplicates, count overflows, and percentage math.
                     </div>
                 </div>
@@ -396,8 +695,8 @@ def main():
             st.markdown(
                 """
                 <div class="mono-card">
-                    <div class="mono-card-title">03 // AUDIT REPORT</div>
-                    <div style="margin-top: 10px; color: #CCCCCC; font-size: 0.9rem;">
+                    <div class="mono-card-title"><span class="indicator-dot dot-red"></span>03 // AUDIT REPORT</div>
+                    <div style="margin-top: 8px; color: #A3A3A3; font-size: 0.85rem; line-height: 1.4;">
                         Pass/Fail gate status, drill-down table with suggested remediation, and exportable multi-sheet Excel reports.
                     </div>
                 </div>
@@ -405,8 +704,10 @@ def main():
                 unsafe_allow_html=True,
             )
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("#### `[ RULE DEFINITION MATRIX ]`")
+        st.markdown(
+            '<div class="section-header-compact" style="margin-top: 16px;">[ RULE DEFINITION MATRIX ]</div>',
+            unsafe_allow_html=True,
+        )
         rule_data = [
             {"Rule Code": "R01", "Rule Name": "Missing Values", "Criteria": "Student ID, Subject, Held, or Attended missing/empty", "Severity": "ERROR"},
             {"Rule Code": "R02", "Rule Name": "Duplicate Records", "Criteria": "Repeated student in same course session (multi-course preserved)", "Severity": "WARNING"},
@@ -416,7 +717,7 @@ def main():
         st.dataframe(pd.DataFrame(rule_data), use_container_width=True, hide_index=True)
         return
 
-    # Column Mapping Expander
+    # Compact Column Mapping Expander
     with st.expander("▾ COLUMN MAPPING AUDIT [AUTO-DETECTED]", expanded=False):
         detected_mapping = AttendanceValidator.detect_columns(df_raw)
         col_m1, col_m2 = st.columns(2)
@@ -456,25 +757,43 @@ def main():
     )
     issues, summary = validator.validate(df_raw, custom_mapping=custom_mapping)
 
-    # Section: Gate Summary & KPIs
-    st.markdown("### `[ QUALITY GATE SUMMARY ]`")
+    # Section: Gate Summary & KPIs (Compact & Tight)
+    st.markdown('<div class="section-header-compact">[ QUALITY GATE SUMMARY ]</div>', unsafe_allow_html=True)
 
-    # Status Banner
+    # Status Banner with Status Indicators (Green / Yellow / Red)
     col_status, col_dl = st.columns([3, 1])
     with col_status:
         if summary.status_label == "PASSED":
             st.markdown(
-                '<div class="gate-banner-pass">✓ QUALITY GATE PASSED // SPREADSHEET CERTIFIED CLEAN (0 ISSUES)</div>',
+                """
+                <div class="gate-banner gate-banner-pass">
+                    <span class="indicator-dot dot-green"></span>
+                    <span class="status-badge badge-green">PASSED</span>
+                    <span>QUALITY GATE PASSED // SPREADSHEET CERTIFIED CLEAN (0 ISSUES)</span>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
         elif summary.status_label == "PASSED WITH WARNINGS":
             st.markdown(
-                f'<div class="gate-banner-warn">⚠ QUALITY GATE WARNING // {summary.total_warnings} WARNING(S) REQUIRE ADMINISTRATIVE REVIEW</div>',
+                f"""
+                <div class="gate-banner gate-banner-warn">
+                    <span class="indicator-dot dot-yellow"></span>
+                    <span class="status-badge badge-yellow">WARNING</span>
+                    <span>QUALITY GATE WARNING // {summary.total_warnings} WARNING(S) REQUIRE ADMINISTRATIVE REVIEW</span>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
         else:
             st.markdown(
-                f'<div class="gate-banner-fail">✕ QUALITY GATE FAILED // {summary.total_errors} CRITICAL ERROR(S) REQUIRE REMEDIATION</div>',
+                f"""
+                <div class="gate-banner gate-banner-fail">
+                    <span class="indicator-dot dot-red"></span>
+                    <span class="status-badge badge-red">FAILED</span>
+                    <span>QUALITY GATE FAILED // {summary.total_errors} CRITICAL ERROR(S) REQUIRE REMEDIATION</span>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
 
@@ -490,12 +809,12 @@ def main():
             use_container_width=True,
         )
 
-    # KPI Metric Cards
+    # KPI Metric Cards with Visual Indicators
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
         st.markdown(
             f"""
-            <div class="mono-card">
+            <div class="mono-card kpi-records">
                 <div class="mono-card-title">TOTAL RECORDS</div>
                 <div class="mono-card-val">{summary.total_records}</div>
             </div>
@@ -503,39 +822,43 @@ def main():
             unsafe_allow_html=True,
         )
     with kpi2:
+        issues_color = "#22c55e" if summary.total_issues == 0 else ("#eab308" if summary.total_errors == 0 else "#ef4444")
+        card_class = "kpi-clean" if summary.total_issues == 0 else ("kpi-warning" if summary.total_errors == 0 else "kpi-error")
         st.markdown(
             f"""
-            <div class="mono-card">
+            <div class="mono-card {card_class}">
                 <div class="mono-card-title">TOTAL ISSUES</div>
-                <div class="mono-card-val">{summary.total_issues}</div>
+                <div class="mono-card-val" style="color: {issues_color};">{summary.total_issues}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
     with kpi3:
+        err_color = "#ef4444" if summary.total_errors > 0 else "#888888"
+        err_class = "kpi-error" if summary.total_errors > 0 else "kpi-clean-zero"
         st.markdown(
             f"""
-            <div class="mono-card">
-                <div class="mono-card-title">CRITICAL ERRORS</div>
-                <div class="mono-card-val">{summary.total_errors}</div>
+            <div class="mono-card {err_class}">
+                <div class="mono-card-title"><span class="indicator-dot dot-red"></span>CRITICAL ERRORS</div>
+                <div class="mono-card-val" style="color: {err_color};">{summary.total_errors}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
     with kpi4:
+        warn_color = "#eab308" if summary.total_warnings > 0 else "#888888"
+        warn_class = "kpi-warning" if summary.total_warnings > 0 else "kpi-clean-zero"
         st.markdown(
             f"""
-            <div class="mono-card">
-                <div class="mono-card-title">WARNINGS</div>
-                <div class="mono-card-val">{summary.total_warnings}</div>
+            <div class="mono-card {warn_class}">
+                <div class="mono-card-title"><span class="indicator-dot dot-yellow"></span>WARNINGS</div>
+                <div class="mono-card-val" style="color: {warn_color};">{summary.total_warnings}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Visual Breakdown (Altair monochrome charts)
+    # Visual Breakdown (Altair charts with indicator colors, compact height)
     if summary.total_issues > 0:
         c_chart1, c_chart2 = st.columns([2, 1])
         with c_chart1:
@@ -543,16 +866,16 @@ def main():
                 list(summary.issues_by_category.items()),
                 columns=["Category", "Count"],
             )
-            render_monochrome_bar_chart(cat_df, "Category", "Count", "ISSUES BY CATEGORY")
+            render_chart(cat_df, "Category", "Count", "ISSUES BY CATEGORY", is_severity=False)
 
         with c_chart2:
             sev_df = pd.DataFrame(
                 list(summary.issues_by_severity.items()),
                 columns=["Severity", "Count"],
             )
-            render_monochrome_bar_chart(sev_df, "Severity", "Count", "ISSUES BY SEVERITY")
+            render_chart(sev_df, "Severity", "Count", "ISSUES BY SEVERITY", is_severity=True)
 
-    # Tabs: Issues Table and Raw Data Explorer
+    # Tabs: Issues Table and Raw Data Explorer (Compact)
     tab_issues, tab_raw = st.tabs([
         f"DETECTED ISSUES [{summary.total_issues}]",
         f"SPREADSHEET RECORDS [{summary.total_records}]"
@@ -613,8 +936,11 @@ def main():
         else:
             st.markdown(
                 """
-                <div style="border: 1px solid #FFFFFF; padding: 20px; background-color: #0A0A0A; border-radius: 4px; text-align: center;">
-                    <h4 style="margin: 0; font-family: monospace; letter-spacing: 1px;">✓ 0 ANOMALIES DETECTED // 100% QUALITY GATE COMPLIANT</h4>
+                <div style="border: 1px solid #166534; padding: 18px; background: rgba(34, 197, 94, 0.08); border-radius: 4px; text-align: center;">
+                    <span class="indicator-dot dot-green"></span>
+                    <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; color: #4ade80; letter-spacing: 1px;">
+                        0 ANOMALIES DETECTED // 100% QUALITY GATE COMPLIANT
+                    </span>
                 </div>
                 """,
                 unsafe_allow_html=True,
