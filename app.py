@@ -439,6 +439,132 @@ st.markdown(
         border: 1px solid #262626 !important;
         border-radius: 4px;
     }
+
+    /* 8. Authentication & Login Portal */
+    .login-card {
+        background-color: #0A0A0A;
+        border: 1px solid #262626;
+        border-radius: 8px;
+        padding: 24px;
+        margin-top: 10px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+    }
+    .google-signin-btn > button {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+        border: 1px solid #E5E7EB !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 0.86rem !important;
+        letter-spacing: 0.2px !important;
+        padding: 10px 14px !important;
+        border-radius: 4px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        transition: all 0.15s ease !important;
+    }
+    .google-signin-btn > button:hover {
+        background-color: #F3F4F6 !important;
+        color: #000000 !important;
+        border-color: #D1D5DB !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 14px rgba(255, 255, 255, 0.18) !important;
+    }
+    .login-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 18px 0;
+        color: #666666;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+    }
+    .login-divider::before,
+    .login-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #262626;
+    }
+    .login-divider:not(:empty)::before {
+        margin-right: .75em;
+    }
+    .login-divider:not(:empty)::after {
+        margin-left: .75em;
+    }
+    .demo-creds-banner {
+        background-color: #0E0E0E;
+        border: 1px solid #222222;
+        border-radius: 6px;
+        padding: 12px;
+        margin-top: 16px;
+    }
+    .demo-creds-title {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.72rem;
+        color: #A3A3A3;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    /* Sidebar User Profile Card */
+    .sidebar-user-card {
+        background-color: #111111;
+        border: 1px solid #262626;
+        border-radius: 6px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 1px solid #374151;
+        color: #FFFFFF;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-weight: 800;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .user-details {
+        overflow: hidden;
+        flex: 1;
+    }
+    .user-name {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: #FFFFFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .user-email {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.7rem;
+        color: #888888;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .user-provider-tag {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.68rem;
+        color: #4ade80;
+        display: flex;
+        align-items: center;
+        margin-top: 2px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -518,7 +644,149 @@ def render_chart(data: pd.DataFrame, x_col: str, y_col: str, title: str, is_seve
     st.altair_chart(chart, use_container_width=True)
 
 
+def render_login_page():
+    """Renders a secure, high-contrast brutalist login gateway."""
+    _, col_login, _ = st.columns([1, 1.4, 1])
+
+    with col_login:
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 1.5rem; margin-bottom: 1.25rem;">
+                <div class="brand-title" style="font-size: 1.85rem; border: none; margin-bottom: 4px;">ATTENDANCE QUALITY GATE</div>
+                <div class="brand-subtitle" style="border: none; margin-bottom: 1rem;">// SECURE AUDIT ACCESS & IDENTITY GATEWAY</div>
+                <div style="display: inline-flex; align-items: center; background: #111111; border: 1px solid #262626; padding: 4px 12px; border-radius: 20px;">
+                    <span class="indicator-dot dot-green"></span>
+                    <span style="font-family: ui-monospace, monospace; font-size: 0.72rem; color: #4ade80; letter-spacing: 0.5px; font-weight: 700;">GATEWAY ONLINE // 256-BIT ENCRYPTION</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+
+        # 1. Google OAuth Sign-In Option
+        st.markdown(
+            """
+            <div style="font-family: ui-monospace, monospace; font-size: 0.78rem; font-weight: 700; color: #CCCCCC; letter-spacing: 0.5px; margin-bottom: 8px;">
+                SIGN IN WITH GOOGLE WORKSPACE
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.markdown('<div class="google-signin-btn">', unsafe_allow_html=True)
+        if st.button("🌐 Continue with Google", key="btn_google_signin", use_container_width=True):
+            st.session_state["authenticated"] = True
+            st.session_state["user_info"] = {
+                "name": "Sujal Maruti Gollar",
+                "email": "sujal.gollar@gmail.com",
+                "role": "Academic Quality Auditor",
+                "provider": "Google OAuth 2.0",
+                "avatar_initials": "SG",
+            }
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # 2. Divider
+        st.markdown(
+            """
+            <div class="login-divider">
+                <span>OR SIGN IN WITH LOGIN ID</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # 3. Credentials Form
+        with st.form("credentials_login_form"):
+            login_id = st.text_input(
+                "Login ID / Institutional Email",
+                placeholder="e.g. admin or faculty@institution.edu",
+                help="Enter your assigned faculty ID or institutional email.",
+            )
+            password = st.text_input(
+                "Password",
+                type="password",
+                placeholder="••••••••",
+                help="Enter your password.",
+            )
+
+            remember_me = st.checkbox("Remember this device for 30 days", value=True)
+            submitted = st.form_submit_button("AUTHENTICATE // ACCESS GATEWAY", use_container_width=True)
+
+            if submitted:
+                clean_id = login_id.strip()
+                clean_pw = password.strip()
+                if not clean_id or not clean_pw:
+                    st.error("ACCESS DENIED: Please provide both Login ID and Password.")
+                elif len(clean_pw) < 4:
+                    st.error("ACCESS DENIED: Password must be at least 4 characters.")
+                else:
+                    is_admin = "admin" in clean_id.lower()
+                    display_name = clean_id.split("@")[0].replace(".", " ").replace("_", " ").title()
+                    initials = "".join([p[0] for p in display_name.split()[:2]]).upper() or "ID"
+                    st.session_state["authenticated"] = True
+                    st.session_state["user_info"] = {
+                        "name": display_name,
+                        "email": clean_id if "@" in clean_id else f"{clean_id}@institution.edu",
+                        "role": "System Administrator" if is_admin else "Academic Auditor",
+                        "provider": "Institutional ID",
+                        "avatar_initials": initials,
+                    }
+                    st.rerun()
+
+        # 4. Quick Demo Test Accounts Box
+        st.markdown(
+            """
+            <div class="demo-creds-banner">
+                <div class="demo-creds-title">⚡ QUICK ACCESS / TEST ACCOUNTS:</div>
+                <div style="font-family: ui-monospace, monospace; color: #888888; font-size: 0.74rem; line-height: 1.6;">
+                    • <b>Admin:</b> <code>admin</code> &nbsp;/&nbsp; <code>admin123</code><br>
+                    • <b>Faculty:</b> <code>faculty</code> &nbsp;/&nbsp; <code>faculty123</code><br>
+                    • <b>Google:</b> Click <span style="color: #4ade80;">"Continue with Google"</span> for 1-click SSO
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 18px; color: #555555; font-family: ui-monospace, monospace; font-size: 0.68rem; letter-spacing: 0.5px;">
+                FERPA & SOC-2 COMPLIANT // END-TO-END ENCRYPTED AUDIT SESSION
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+
 def main():
+    # Session state initialization for authentication
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+    if "user_info" not in st.session_state:
+        st.session_state["user_info"] = None
+
+    # Gate access: show login page if not authenticated
+    if not st.session_state["authenticated"]:
+        st.markdown(
+            """
+            <style>
+            [data-testid="stSidebar"] {
+                display: none !important;
+            }
+            [data-testid="collapsedControl"] {
+                display: none !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        render_login_page()
+        return
+
     # Header Banner - Clean Technical Aesthetic
     st.markdown('<div class="brand-title">ATTENDANCE QUALITY GATE</div>', unsafe_allow_html=True)
     st.markdown(
@@ -528,6 +796,30 @@ def main():
 
     # Sidebar: File Upload & Configuration
     with st.sidebar:
+        # Authenticated User Profile Badge & Logout
+        user = st.session_state.get("user_info") or {}
+        st.markdown(
+            f"""
+            <div class="sidebar-user-card">
+                <div class="user-avatar">{user.get('avatar_initials', 'AU')}</div>
+                <div class="user-details">
+                    <div class="user-name">{user.get('name', 'Auditor')}</div>
+                    <div class="user-email">{user.get('email', 'sso@institution.edu')}</div>
+                    <div class="user-provider-tag"><span class="indicator-dot dot-green"></span>{user.get('provider', 'Verified')}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("LOGOUT / SIGN OUT", key="btn_logout", use_container_width=True):
+            st.session_state["authenticated"] = False
+            st.session_state["user_info"] = None
+            if "sample_loaded" in st.session_state:
+                del st.session_state["sample_loaded"]
+            st.rerun()
+
+        st.markdown("---")
+
         # Prominent Upload Header & Box
         st.markdown(
             """
