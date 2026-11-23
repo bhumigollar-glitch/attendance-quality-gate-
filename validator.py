@@ -555,25 +555,25 @@ class AttendanceValidator:
         # Remove default sheet
         wb.remove(wb.active)
 
-        # Style definitions
-        title_font = Font(name="Calibri", size=16, bold=True, color="1F497D")
-        subtitle_font = Font(name="Calibri", size=11, italic=True, color="595959")
-        section_font = Font(name="Calibri", size=13, bold=True, color="1F497D")
+        # Style definitions - High Contrast Executive Theme
+        title_font = Font(name="Calibri", size=16, bold=True, color="000000")
+        subtitle_font = Font(name="Calibri", size=11, italic=True, color="555555")
+        section_font = Font(name="Calibri", size=12, bold=True, color="000000")
         header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-        bold_font = Font(name="Calibri", size=11, bold=True)
-        regular_font = Font(name="Calibri", size=11)
+        bold_font = Font(name="Calibri", size=11, bold=True, color="000000")
+        regular_font = Font(name="Calibri", size=11, color="000000")
         
-        header_fill = PatternFill(start_color="1F497D", end_color="1F497D", fill_type="solid")
-        error_fill = PatternFill(start_color="FCE4D6", end_color="FCE4D6", fill_type="solid")  # soft red
-        warning_fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid") # soft amber
-        pass_fill = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")    # soft green
-        zebra_fill = PatternFill(start_color="F9FAFB", end_color="F9FAFB", fill_type="solid")
+        header_fill = PatternFill(start_color="000000", end_color="000000", fill_type="solid")
+        error_fill = PatternFill(start_color="F2DEDE", end_color="F2DEDE", fill_type="solid")  # soft high-contrast red
+        warning_fill = PatternFill(start_color="FCF8E3", end_color="FCF8E3", fill_type="solid") # soft amber
+        pass_fill = PatternFill(start_color="DFF0D8", end_color="DFF0D8", fill_type="solid")    # soft green
+        zebra_fill = PatternFill(start_color="F5F5F5", end_color="F5F5F5", fill_type="solid")
 
         thin_border = Border(
-            left=Side(style="thin", color="D9D9D9"),
-            right=Side(style="thin", color="D9D9D9"),
-            top=Side(style="thin", color="D9D9D9"),
-            bottom=Side(style="thin", color="D9D9D9"),
+            left=Side(style="thin", color="CCCCCC"),
+            right=Side(style="thin", color="CCCCCC"),
+            top=Side(style="thin", color="CCCCCC"),
+            bottom=Side(style="thin", color="CCCCCC"),
         )
 
         # ----------------------------------------------------
